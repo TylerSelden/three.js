@@ -24,7 +24,8 @@ function MenubarView( editor ) {
 		gridHelper: true,
 		cameraHelpers: true,
 		lightHelpers: true,
-		skeletonHelpers: true
+		skeletonHelpers: true,
+    showSolids: true
 
 	};
 
@@ -93,6 +94,30 @@ function MenubarView( editor ) {
 		signals.showHelpersChanged.dispatch( states );
 
 	} );
+  
+  // Show Solids
+
+	option = new UIRow().addClass( 'option' ).addClass( 'toggle' ).setTextContent( strings.getKey( 'menubar/view/showSolids' ) ).onClick( function () {
+
+		states.showSolids = ! states.showSolids;
+
+		this.toggleClass( 'toggle-on', states.showSolids );
+
+    editor.scene.traverse( function ( child ) {
+
+      if ( child.isMesh && child.userData.physicalObj ) {
+
+        child.visible = states.showSolids;
+        
+      }
+
+      signals.sceneGraphChanged.dispatch();
+
+    } );
+
+	} ).toggleClass( 'toggle-on', states.lightHelpers );
+
+	options.add( option );
 
 	//
 

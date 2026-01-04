@@ -505,6 +505,7 @@ function Strings( config ) {
 			'menubar/view/cameraHelpers': 'Camera Helpers',
 			'menubar/view/lightHelpers': 'Light Helpers',
 			'menubar/view/skeletonHelpers': 'Skeleton Helpers',
+      'menubar/view/showSolids': 'Show Solids',
 
 			'menubar/help': 'Help',
 			'menubar/help/source_code': 'Source Code',
