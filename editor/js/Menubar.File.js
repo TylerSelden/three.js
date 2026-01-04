@@ -55,10 +55,8 @@ function MenubarFile( editor ) {
 	} );
 	newProjectSubmenu.add( option );
 
-	//
-
 	newProjectSubmenu.add( new UIHorizontalRule() );
-
+	
 	// New Project / ...
 
 	const examples = [
@@ -99,6 +97,56 @@ function MenubarFile( editor ) {
 		} )( i );
 
 	}
+
+  // New From
+
+	const newFromSubmenuTitle = new UIRow().setTextContent( strings.getKey( 'menubar/file/new_from' ) ).addClass( 'option' ).addClass( 'submenu-title' );
+	newFromSubmenuTitle.onMouseOver( function () {
+
+		const { top, right } = this.dom.getBoundingClientRect();
+		const { paddingTop } = getComputedStyle( this.dom );
+		newFromSubmenu.setLeft( right + 'px' );
+		newFromSubmenu.setTop( top - parseFloat( paddingTop ) + 'px' );
+		newFromSubmenu.setDisplay( 'block' );
+
+	} );
+	newFromSubmenuTitle.onMouseOut( function () {
+
+		newFromSubmenu.setDisplay( 'none' );
+
+	} );
+	options.add( newFromSubmenuTitle );
+
+	const newFromSubmenu = new UIPanel().setPosition( 'fixed' ).addClass( 'options' ).setDisplay( 'none' );
+	newFromSubmenuTitle.add( newFromSubmenu );
+
+	// New From / GLB
+
+	option = new UIRow().setTextContent( 'GLB' ).setClass( 'option' );
+	option.onClick( function () {
+
+		if ( confirm( strings.getKey( 'prompt/file/open' ) ) ) {
+
+			editor.clear();
+
+		}
+
+	} );
+	newFromSubmenu.add( option );
+  
+  // New From / GLTF
+
+	option = new UIRow().setTextContent( 'GLTF' ).setClass( 'option' );
+	option.onClick( function () {
+
+		if ( confirm( strings.getKey( 'prompt/file/open' ) ) ) {
+
+			editor.clear();
+
+		}
+
+	} );
+	newFromSubmenu.add( option );
 
 	// Open
 
