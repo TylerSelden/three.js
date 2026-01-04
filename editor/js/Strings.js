@@ -481,6 +481,11 @@ function Strings( config ) {
 			'menubar/add/mesh/lathe': 'Lathe',
 			'menubar/add/mesh/sprite': 'Sprite',
 
+      'menubar/add/solid': 'Solid',
+      'menubar/add/solid/box': 'Box',
+      'menubar/add/solid/sphere': 'Sphere',
+      'menubar/add/solid/cylinder': 'Cylinder',
+
 			'menubar/add/light': 'Light',
 			'menubar/add/light/ambient': 'Ambient',
 			'menubar/add/light/directional': 'Directional',

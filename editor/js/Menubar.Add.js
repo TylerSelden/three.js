@@ -322,6 +322,97 @@ function MenubarAdd( editor ) {
 	} );
 	meshSubmenu.add( option );
 
+  // Solid
+
+	const solidSubmenuTitle = new UIRow().setTextContent( strings.getKey( 'menubar/add/solid' ) ).addClass( 'option' ).addClass( 'submenu-title' );
+	solidSubmenuTitle.onMouseOver( function () {
+
+		const { top, right } = solidSubmenuTitle.dom.getBoundingClientRect();
+		const { paddingTop } = getComputedStyle( this.dom );
+		solidSubmenu.setLeft( right + 'px' );
+		solidSubmenu.setTop( top - parseFloat( paddingTop ) + 'px' );
+		solidSubmenu.setStyle( 'max-height', [ `calc( 100vh - ${top}px )` ] );
+		solidSubmenu.setDisplay( 'block' );
+
+	} );
+	solidSubmenuTitle.onMouseOut( function () {
+
+		solidSubmenu.setDisplay( 'none' );
+
+	} );
+	options.add( solidSubmenuTitle );
+
+	const solidSubmenu = new UIPanel().setPosition( 'fixed' ).addClass( 'options' ).setDisplay( 'none' );
+	solidSubmenuTitle.add( solidSubmenu );
+
+	// Solid / Box
+
+	option = new UIRow();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/solid/box' ) );
+	option.onClick( function () {
+
+		const geometry = new THREE.BoxGeometry( 1, 1, 1, 1, 1, 1 );
+		const mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
+		mesh.name = 'Box';
+    // TODO: Add solid userdata here, and physics data to scene if it doesn't already exist :D
+    //       oh also make it red :DD
+
+    mesh.material.color.setHex( 0xff1122 );
+    mesh.userData.physicalObj = true;
+    editor.scene.userData.physics = editor.scene.userData.physics || {
+      mass: 0
+    };
+
+		editor.execute( new AddObjectCommand( editor, mesh ) );
+
+	} );
+	solidSubmenu.add( option );
+
+  // Solid / Sphere
+
+	option = new UIRow();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/solid/sphere' ) );
+	option.onClick( function () {
+
+		const geometry = new THREE.SphereGeometry( 1, 32, 16, 0, Math.PI * 2, 0, Math.PI );
+		const mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
+		mesh.name = 'Sphere';
+
+    mesh.material.color.setHex( 0xff1122 );
+    mesh.userData.physicalObj = true;
+    editor.scene.userData.physics = editor.scene.userData.physics || {
+      mass: 0
+    };
+
+		editor.execute( new AddObjectCommand( editor, mesh ) );
+
+	} );
+	solidSubmenu.add( option );
+
+  // Mesh / Cylinder
+
+	option = new UIRow();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/solid/cylinder' ) );
+	option.onClick( function () {
+
+		const geometry = new THREE.CylinderGeometry( 1, 1, 1, 32, 1, false, 0, Math.PI * 2 );
+		const mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
+		mesh.name = 'Cylinder';
+
+    mesh.material.color.setHex( 0xff1122 );
+    mesh.userData.physicalObj = true;
+    editor.scene.userData.physics = editor.scene.userData.physics || {
+      mass: 0
+    };
+
+		editor.execute( new AddObjectCommand( editor, mesh ) );
+
+	} );
+	solidSubmenu.add( option );
+
 	// Light
 
 	const lightSubmenuTitle = new UIRow().setTextContent( strings.getKey( 'menubar/add/light' ) ).addClass( 'option' ).addClass( 'submenu-title' );
