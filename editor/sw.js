@@ -68,6 +68,7 @@ const assets = [
 	'../examples/jsm/interactive/HTMLMesh.js',
 	'../examples/jsm/interactive/InteractiveGroup.js',
 
+	'../examples/jsm/environments/ColorEnvironment.js',
 	'../examples/jsm/environments/RoomEnvironment.js',
 
 	'../examples/jsm/exporters/DRACOExporter.js',
@@ -78,6 +79,7 @@ const assets = [
 	'../examples/jsm/exporters/USDZExporter.js',
 
 	'../examples/jsm/helpers/VertexNormalsHelper.js',
+	'../examples/jsm/helpers/ViewHelper.js',
 
 	'../examples/jsm/utils/BufferGeometryUtils.js',
 
@@ -150,9 +152,8 @@ const assets = [
 	'./js/Sidebar.Project.js',
 	'./js/Sidebar.Project.Renderer.js',
 	'./js/Sidebar.Project.Materials.js',
+	'./js/Sidebar.Project.Resources.js',
 	'./js/Sidebar.Project.App.js',
-	'./js/Sidebar.Project.Image.js',
-	'./js/Sidebar.Project.Video.js',
 	'./js/Sidebar.Settings.js',
 	'./js/Sidebar.Settings.History.js',
 	'./js/Sidebar.Settings.Shortcuts.js',
@@ -192,6 +193,7 @@ const assets = [
 	'./js/Viewport.js',
 	'./js/Viewport.Controls.js',
 	'./js/Viewport.Info.js',
+	'./js/Viewport.Pathtracer.js',
 	'./js/Viewport.ViewHelper.js',
 	'./js/Viewport.XR.js',
 
