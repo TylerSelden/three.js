@@ -134,22 +134,12 @@ export default /* glsl */`
 				// Use IGN to rotate sampling pattern per pixel
 				float phi = interleavedGradientNoise( gl_FragCoord.xy ) * PI2;
 
-				#ifdef USE_REVERSED_DEPTH_BUFFER
-
-					float dp = 1.0 - shadowCoord.z;
-
-				#else
-
-					float dp = shadowCoord.z;
-
-				#endif
-
 				shadow = (
-					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 0, 5, phi ) * radius, dp ) ) +
-					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 1, 5, phi ) * radius, dp ) ) +
-					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 2, 5, phi ) * radius, dp ) ) +
-					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 3, 5, phi ) * radius, dp ) ) +
-					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 4, 5, phi ) * radius, dp ) )
+					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 0, 5, phi ) * radius, shadowCoord.z ) ) +
+					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 1, 5, phi ) * radius, shadowCoord.z ) ) +
+					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 2, 5, phi ) * radius, shadowCoord.z ) ) +
+					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 3, 5, phi ) * radius, shadowCoord.z ) ) +
+					texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( 4, 5, phi ) * radius, shadowCoord.z ) )
 				) * 0.2;
 
 			}
@@ -165,7 +155,16 @@ export default /* glsl */`
 			float shadow = 1.0;
 
 			shadowCoord.xyz /= shadowCoord.w;
-			shadowCoord.z += shadowBias;
+
+			#ifdef USE_REVERSED_DEPTH_BUFFER
+
+				shadowCoord.z -= shadowBias;
+
+			#else
+
+				shadowCoord.z += shadowBias;
+
+			#endif
 
 			bool inFrustum = shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0;
 			bool frustumTest = inFrustum && shadowCoord.z <= 1.0;
@@ -177,8 +176,16 @@ export default /* glsl */`
 				float mean = distribution.x;
 				float variance = distribution.y * distribution.y;
 
-				float hard_shadow = step( shadowCoord.z, mean );
+				#ifdef USE_REVERSED_DEPTH_BUFFER
 
+					float hard_shadow = step( mean, shadowCoord.z );
+
+				#else
+
+					float hard_shadow = step( shadowCoord.z, mean );
+
+				#endif
+				
 				// Early return if fully lit
 				if ( hard_shadow == 1.0 ) {
 
@@ -215,7 +222,16 @@ export default /* glsl */`
 			float shadow = 1.0;
 
 			shadowCoord.xyz /= shadowCoord.w;
-			shadowCoord.z += shadowBias;
+
+			#ifdef USE_REVERSED_DEPTH_BUFFER
+
+				shadowCoord.z -= shadowBias;
+
+			#else
+
+				shadowCoord.z += shadowBias;
+
+			#endif
 
 			bool inFrustum = shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0;
 			bool frustumTest = inFrustum && shadowCoord.z <= 1.0;
@@ -226,11 +242,13 @@ export default /* glsl */`
 
 				#ifdef USE_REVERSED_DEPTH_BUFFER
 
-					depth = 1.0 - depth;
+					shadow = step( depth, shadowCoord.z );
+
+				#else
+
+					shadow = step( shadowCoord.z, depth );
 
 				#endif
-
-				shadow = step( shadowCoord.z, depth );
 
 			}
 
@@ -267,14 +285,14 @@ export default /* glsl */`
 			#ifdef USE_REVERSED_DEPTH_BUFFER
 
 				float dp = ( shadowCameraNear * ( shadowCameraFar - viewSpaceZ ) ) / ( viewSpaceZ * ( shadowCameraFar - shadowCameraNear ) );
+				dp -= shadowBias;
 
 			#else
 
 				float dp = ( shadowCameraFar * ( viewSpaceZ - shadowCameraNear ) ) / ( viewSpaceZ * ( shadowCameraFar - shadowCameraNear ) );
+				dp += shadowBias;
 
 			#endif
-			
-			dp += shadowBias;
 
 			// Hardware PCF with LinearFilter gives us 4-tap filtering per sample
 			// Use Vogel disk + IGN sampling for better quality

@@ -3,13 +3,13 @@ import {
 	Loader
 } from 'three';
 
-import * as fflate from '../libs/fflate.module.js';
+import { unzipSync } from '../libs/fflate.module.js';
 import { USDAParser } from './usd/USDAParser.js';
 import { USDCParser } from './usd/USDCParser.js';
 import { USDComposer } from './usd/USDComposer.js';
 
 /**
- * A loader for the USD format (USDA, USDC, USDZ).
+ * A loader for the USD format (USD, USDA, USDC, USDZ).
  *
  * Supports both ASCII (USDA) and binary (USDC) USD files, as well as
  * USDZ archives containing either format.
@@ -123,7 +123,7 @@ class USDLoader extends Loader {
 
 					} else {
 
-						const text = fflate.strFromU8( zip[ filename ] );
+						const text = new TextDecoder().decode( zip[ filename ] );
 						// Store parsed data (specsByPath) for on-demand composition
 						data[ filename ] = usda.parseData( text );
 						// Store raw text for re-parsing with variant selections
@@ -201,11 +201,13 @@ class USDLoader extends Loader {
 
 		}
 
+		const scope = this;
+
 		// USDA (standalone)
 
 		if ( typeof buffer === 'string' ) {
 
-			const composer = new USDComposer();
+			const composer = new USDComposer( scope.manager );
 			const data = usda.parseData( buffer );
 			return composer.compose( data, {} );
 
@@ -215,7 +217,7 @@ class USDLoader extends Loader {
 
 		if ( isCrateFile( buffer ) ) {
 
-			const composer = new USDComposer();
+			const composer = new USDComposer( scope.manager );
 			const data = usdc.parseData( buffer );
 			return composer.compose( data, {} );
 
@@ -227,13 +229,13 @@ class USDLoader extends Loader {
 
 		if ( bytes[ 0 ] === 0x50 && bytes[ 1 ] === 0x4B ) {
 
-			const zip = fflate.unzipSync( bytes );
+			const zip = unzipSync( bytes );
 
 			const assets = parseAssets( zip );
 
 			const { file, basePath } = findUSD( zip );
 
-			const composer = new USDComposer();
+			const composer = new USDComposer( scope.manager );
 			let data;
 
 			if ( isCrateFile( file ) ) {
@@ -242,7 +244,7 @@ class USDLoader extends Loader {
 
 			} else {
 
-				const text = fflate.strFromU8( file );
+				const text = new TextDecoder().decode( file );
 				data = usda.parseData( text );
 
 			}
@@ -253,8 +255,8 @@ class USDLoader extends Loader {
 
 		// USDA (standalone, as ArrayBuffer)
 
-		const composer = new USDComposer();
-		const text = fflate.strFromU8( bytes );
+		const composer = new USDComposer( scope.manager );
+		const text = new TextDecoder().decode( bytes );
 		const data = usda.parseData( text );
 		return composer.compose( data, {} );
 
